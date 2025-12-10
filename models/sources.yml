@@ -1,0 +1,10 @@
+version: 2
+
+sources:
+
+  - name: csv
+    database: puffy
+    schema: raw
+    tables:
+      - name: events
+        description: addresses for clinics where fivetran is incorrectly setting to null
