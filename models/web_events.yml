@@ -27,9 +27,8 @@ models:
         data_tests:
           - not_null
       - name: referrer
-        tests:
+        data_tests:
           - not_null_for_entire_day:
-              column_name: referrer
               date_column: event_timestamp
-              config:
-                severity: warn
+              severity: warn
+              

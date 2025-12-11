@@ -17,6 +17,9 @@ final as (
         --base url
          SPLIT_PART(page_url, '?', 1) AS base_url,
 
+         --referrer base url
+         SPLIT_PART(referrer, '?', 1) AS referrer_base_url,
+
         -- UTM Source
         REGEXP_SUBSTR(page_url, 'utm_source=([^&]*)', 1, 1, 'e') AS utm_source,
         
