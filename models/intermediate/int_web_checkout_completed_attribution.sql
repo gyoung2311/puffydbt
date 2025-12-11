@@ -1,6 +1,11 @@
 -- revenue_matches_item_sum_int_web_checkout_completed_attribution_item_revenue__int_web_checkout_completed_order_details__revenue__transaction_id":
 -- depends_on: {{ ref('int_web_checkout_completed_order_details') }}
 
+
+-- NOTE: Did not have enough information to classify marketing channel. 
+-- Marketing channel is most commonly classified using a combo of (1) click IDs first, then (2) UTMs and finally referrer + landing URL patterns as fallback.
+-- As a result, demonstrated using utm_parameters only how we to obtain first touch or last touch
+
 with 
 
 checkout_completed_events as (
