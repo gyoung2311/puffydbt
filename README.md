@@ -39,22 +39,26 @@ These documents provide deeper explanations, diagrams, and reasoning behind the 
 - Standardizes column naming, typing, timestamp formatting.
 - Performs lightweight cleansing (dedupe, filtering invalid events).
 - **Goal:** Clean, consistent, trustworthy base tables for downstream modeling.
+- staging.yml documents the models in this folder and defines the data tests configured for them.
 
 ### `models/intermediate/`
 - Business logic + multi-source joins.
 - Examples: sessionization, touchpoint enrichment, order-to-event relationships.
 - Encodes logic once → reused across star models.
 - **Goal:** Central place for important business transformations.
+- intermediate.yml documents the models in this folder and defines the data tests configured for them.
 
 ### `models/star/`
 - Dimensional **facts & dimensions** with clearly documented grain.
 - Examples: `fct_events`, `dim_users`, `fct_marketing_touches`.
 - **Goal:** Analyst-friendly, joinable semantic layer following Kimball principles.
+- star.yml documents the models in this folder and defines the data tests configured for them.
 
 ### `models/marts/`
 - Final business views tailored for stakeholders.
 - Examples: channel ROAS, CAC & payback, funnel performance, cohorts.
 - **Goal:** BI-ready tables that can power dashboards/reports directly.
+
 
 ### `tests/`
 - Contains custom data tests written specifically for this assignment.
