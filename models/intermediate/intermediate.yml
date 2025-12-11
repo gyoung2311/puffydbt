@@ -1,0 +1,77 @@
+version: 2
+
+models:
+
+  - name: int_web_events
+    description: "Intermediate model that sessionizes web events and enriches them with UTM parameters. Creates session numbers based on 30-minute inactivity windows and fills in missing UTM parameters within sessions."
+    columns:
+      - name: client_id
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: event_timestamp
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: session_number
+        description: "Session number per client_id assigned based on 30-minute inactivity windows"
+
+  - name: int_web_checkout_completed_attribution
+    description: "Attribution model for checkout completed events with first-touch and last-touch UTM parameters from sessions within a 7-day lookback window."
+    columns:
+      - name: transaction_id
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: revenue
+        description: "Revenue from the checkout completed event"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: client_id
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: checkout_completed_at
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+    data_tests:
+      - revenue_matches_item_sum:
+          order_details_model: int_web_checkout_completed_order_details
+          transaction_id_column: transaction_id
+          revenue_column: revenue
+          item_revenue_column: item_revenue
+          config:
+            severity: warn
+
+  - name: int_web_checkout_completed_order_details
+    description: "Line-item details for checkout completed events, including item-level revenue calculations."
+    columns:
+      - name: transaction_id
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: item_revenue
+        description: "Revenue for individual line items (item_price * quantity)"
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: client_id
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: event_timestamp
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
