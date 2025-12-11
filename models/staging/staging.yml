@@ -31,4 +31,7 @@ models:
           - not_null_for_entire_day:
               date_column: event_timestamp
               severity: warn
-              
+      - name: transaction_id
+        data_tests:
+          - unique:
+              severity: warn
