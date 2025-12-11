@@ -43,11 +43,21 @@ models:
               config:
                 severity: warn
     data_tests:
-      - revenue_matches_item_sum:
-          order_details_model: int_web_checkout_completed_order_details
-          transaction_id_column: transaction_id
-          revenue_column: revenue
-          item_revenue_column: item_revenue
+      - dbt_expectations.expect_table_aggregation_to_equal_other_table:
+          expression: "sum(revenue)"
+          compare_model: ref('int_web_checkout_completed_order_details')
+          compare_expression: "sum(item_revenue)"
+          group_by: [transaction_id]
+          row_condition: ""
+          compare_row_condition: ""
+          config:
+            severity: warn
+      - dbt_expectations.expect_table_aggregation_to_equal_other_table:
+          expression: "sum(revenue)"
+          compare_model: ref('stg_web_events')
+          compare_expression: "sum(revenue)"
+          row_condition: ""
+          compare_row_condition: ""
           config:
             severity: warn
 
