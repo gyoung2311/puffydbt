@@ -1,0 +1,34 @@
+version: 2
+
+models:
+
+  - name: stg_web_events
+    description: "Staging model for web events from CSV source."
+    columns:
+      - name: client_id
+        data_tests:
+          - not_null:
+              severity: warn
+      - name: page_url
+        data_tests:
+          - not_null
+      - name: event_name
+        data_tests:
+          - not_null:
+              severity: warn
+          - accepted_values:
+              values:
+                - 'product_added_to_cart'
+                - 'checkout_completed'
+                - 'email_filled_on_popup'
+                - 'page_viewed'
+                - 'checkout_started'
+      - name: event_timestamp
+        data_tests:
+          - not_null
+      - name: referrer
+        data_tests:
+          - not_null_for_entire_day:
+              date_column: event_timestamp
+              severity: warn
+              
