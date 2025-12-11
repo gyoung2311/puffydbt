@@ -41,8 +41,10 @@ final as (
         -- Impact.com ir click id
         REGEXP_SUBSTR(page_url, 'gclid=([^&]*)', 1, 1, 'e') AS google_click_id,
 
-        -- Revenue from event data JSON
+        -- Completed Order fields
         parse_json(event_data):revenue::number AS revenue,
+        parse_json(event_data):transaction_id::string AS transaction_id,
+        parse_json(event_data):user_email::string AS user_email,
 
         CASE
             -- Detect mobile devices
