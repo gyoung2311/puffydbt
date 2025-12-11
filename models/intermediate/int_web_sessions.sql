@@ -27,4 +27,3 @@ client_sessions as (
 )
 
 select * from client_sessions
---where client_id = '1741367456-uz2V75aLolvU'
