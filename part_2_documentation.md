@@ -181,6 +181,32 @@ This ensures data is not accidently filtered out during the transformation proce
 
 Continuous validation ensures that as data flows **raw → staging → intermediate → star → marts**, anomalies are caught early and prevented from influencing business metrics.
 
+
+---
+---
+---
+
+## How I Define Users
+
+## Current Approach
+
+Based on the available raw event data, I've implemented a straightforward user definition: **a `client_id` represents a user**. This identifier is used throughout the transformation pipeline to:
+
+- Track user journeys across sessions (as implemented in `fct_client_journey.sql`)
+- Build client-level dimensions and aggregates (in `dim_clients.sql`)
+- Perform sessionization (grouping events by `client_id` with a 30-minute inactivity threshold)
+- Calculate user-level metrics such as conversion rates, time-to-purchase, and lifetime value
+
+## Limitations & Data Quality Considerations
+
+This approach has known limitations that I've documented and accounted for:
+
+1. **Missing identifiers**: 2,908 raw events are missing `client_id` values entirely, which means some user behavior cannot be attributed
+2. **No cross-device stitching**: A user browsing on mobile and then purchasing on desktop would appear as two separate users
+3. **No anonymous-to-identified mapping**: If a user starts as anonymous and later provides an email (captured in `event_data.user_email`), these events remain separate under the current model
+4. **Cookie/browser limitations**: `client_id` is likely browser/cookie-based, so users clearing cookies or using multiple browsers appear as distinct users
+
+
 ---
 
 
