@@ -21,15 +21,31 @@ client_aggregates AS (
     GROUP BY client_id
 ),
 
+checkouts_completed as (
+    select * from {{ ref('int_web_checkout_completed_attribution') }}    
+),
+
+total_number_checkouts_completed as (
+    select
+        client_id,
+        max(client_purchase_sequence) as total_checkouts_completed
+    from checkouts_completed
+    group by all
+),
+
 final as (
     SELECT 
-        client_id,
-        total_events,
-        total_sessions,
-        total_revenue,
-        DATEDIFF('day', first_event_timestamp, last_event_timestamp) AS days_active
-
+        client_aggregates.client_id,
+        client_aggregates.total_events,
+        client_aggregates.total_sessions,
+        client_aggregates.total_revenue,
+        DATEDIFF('day', first_event_timestamp, last_event_timestamp) AS days_active,
+        total_number_checkouts_completed.total_checkouts_completed
+        
     FROM client_aggregates 
+
+    LEFT JOIN total_number_checkouts_completed
+        on total_number_checkouts_completed.client_id = client_aggregates.client_id
 )
 
 select * from final
