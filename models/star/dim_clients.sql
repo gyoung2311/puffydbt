@@ -71,6 +71,7 @@ final as (
         on client_aggregates.client_id = first_events.client_id
     LEFT JOIN first_checkout_completed
         on first_checkout_completed.client_id = first_events.client_id
+    WHERE first_events.client_id is not null
 
 )
 

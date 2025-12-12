@@ -46,6 +46,8 @@ final as (
 
     LEFT JOIN total_number_checkouts_completed
         on total_number_checkouts_completed.client_id = client_aggregates.client_id
+    
+    WHERE client_aggregates.client_id is not null
 )
 
 select * from final
