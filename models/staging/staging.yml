@@ -35,3 +35,36 @@ models:
         data_tests:
           - unique:
               severity: warn
+      - name: revenue
+        description: "Revenue amount (only populated for checkout_completed events)"
+        
+    data_tests:
+      - dbt_utils.expression_is_true:
+          expression: "event_timestamp <= CURRENT_TIMESTAMP()"
+          config:
+            severity: warn
+            description: "Events should not be in the future"
+      - dbt_utils.expression_is_true:
+          expression: "event_timestamp >= '2020-01-01'::timestamp"
+          config:
+            severity: warn
+            description: "Events should not be too far in the past (data quality check)"
+      - dbt_utils.expression_is_true:
+          expression: "(event_name = 'checkout_completed' AND revenue IS NOT NULL) OR (event_name != 'checkout_completed' AND revenue IS NULL)"
+          config:
+            severity: warn
+            description: "Revenue should only be present for checkout_completed events"
+      - dbt_utils.expression_is_true:
+          expression: "(event_name = 'checkout_completed' AND transaction_id IS NOT NULL) OR (event_name != 'checkout_completed' AND transaction_id IS NULL)"
+          config:
+            severity: warn
+            description: "Transaction ID should only be present for checkout_completed events"
+      - dbt_utils.expression_is_true:
+            expression: "revenue IS NULL OR revenue >= 0"
+            config:
+              severity: warn
+      - dbt_utils.expression_is_true:
+          expression: "revenue IS NULL OR revenue <= 1000000"
+          config:
+            severity: warn
+            description: "Revenue should be within reasonable bounds"
