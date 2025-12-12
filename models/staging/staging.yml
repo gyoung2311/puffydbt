@@ -1,0 +1,70 @@
+version: 2
+
+models:
+
+  - name: stg_web_events
+    description: "Staging model for web events from CSV source."
+    columns:
+      - name: client_id
+        data_tests:
+          - not_null:
+              severity: warn
+      - name: page_url
+        data_tests:
+          - not_null
+      - name: event_name
+        data_tests:
+          - not_null:
+              severity: warn
+          - accepted_values:
+              values:
+                - 'product_added_to_cart'
+                - 'checkout_completed'
+                - 'email_filled_on_popup'
+                - 'page_viewed'
+                - 'checkout_started'
+      - name: event_timestamp
+        data_tests:
+          - not_null
+      - name: referrer
+        data_tests:
+          - not_null_for_entire_day:
+              date_column: event_timestamp
+              severity: warn
+      - name: transaction_id
+        data_tests:
+          - unique:
+              severity: warn
+      - name: revenue
+        description: "Revenue amount (only populated for checkout_completed events)"
+        
+    data_tests:
+      - dbt_utils.expression_is_true:
+          expression: "event_timestamp <= CURRENT_TIMESTAMP()"
+          config:
+            severity: warn
+            description: "Events should not be in the future"
+      - dbt_utils.expression_is_true:
+          expression: "event_timestamp >= '2020-01-01'::timestamp"
+          config:
+            severity: warn
+            description: "Events should not be too far in the past (data quality check)"
+      - dbt_utils.expression_is_true:
+          expression: "(event_name = 'checkout_completed' AND revenue IS NOT NULL) OR (event_name != 'checkout_completed' AND revenue IS NULL)"
+          config:
+            severity: warn
+            description: "Revenue should only be present for checkout_completed events"
+      - dbt_utils.expression_is_true:
+          expression: "(event_name = 'checkout_completed' AND transaction_id IS NOT NULL) OR (event_name != 'checkout_completed' AND transaction_id IS NULL)"
+          config:
+            severity: warn
+            description: "Transaction ID should only be present for checkout_completed events"
+      - dbt_utils.expression_is_true:
+            expression: "revenue IS NULL OR revenue >= 0"
+            config:
+              severity: warn
+      - dbt_utils.expression_is_true:
+          expression: "revenue IS NULL OR revenue <= 1000000"
+          config:
+            severity: warn
+            description: "Revenue should be within reasonable bounds"
